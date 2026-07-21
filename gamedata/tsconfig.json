@@ -1,0 +1,12 @@
+{
+  // Single project for both the TSTL build and the IDE: it must cover `env.d.ts` (ambient
+  // globals and `IniFileSchemas` augmentation), `scripts/` (transpiled to Lua) and
+  // `configs/` (authored text-file modules) together, so the schema augmentation is in
+  // scope when `configs/*.ts` bind to it.
+  //
+  // This is also the project the IDE resolves for everything under `gamedata`, since the
+  // editor picks the nearest enclosing tsconfig — the root one never applies here. The JSX
+  // settings config modules need come from the base config, so nothing is restated here.
+  "extends": "anomaly-packer/tsconfig.scripts.json",
+  "include": ["scripts/**/*.ts", "configs/**/*.ts", "configs/**/*.tsx", "env.d.ts"]
+}

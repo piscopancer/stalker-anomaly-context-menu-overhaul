@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "moduleDetection": "force",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "types": ["node"]
+  },
+  // Only the build harness. Everything under `gamedata` — scripts and config modules alike —
+  // belongs to `gamedata/tsconfig.json`, which the IDE resolves for those files anyway.
+  "include": ["pack.ts", "deploy.ts"],
+  "exclude": ["node_modules", "gamedata"]
+}
