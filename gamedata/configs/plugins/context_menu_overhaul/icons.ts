@@ -17,54 +17,60 @@ export const extension: FileExtension = "ltx"
  * than the rest — they are here for coverage, and are the first ones worth replacing.
  */
 const icon = {
-  // The addon's own sheet (`textures/ui/cmi_icons.dds`), 64² cells drawn for this menu.
+  // The addon's own sheet (`textures/ui/cmo_icons.dds`), 64² cells drawn for this menu.
   /** A hand. */
-  hand: "ui_cmi_hand",
+  hand: "ui_cmo_hand",
   /** A trash bin. */
-  trashbin: "ui_cmi_trashbin",
+  trashbin: "ui_cmo_trashbin",
+  /** A crossed-out trash bin. */
+  untrashbin: "ui_cmo_untrashbin",
+  /** A body armour vest. */
+  vest: "ui_cmo_vest",
+  /** A helmet. */
+  helmet: "ui_cmo_helmet",
+  /** A silencer. */
+  silencer: "ui_cmo_silencer",
+  /** An underbarrel grenade launcher. */
+  gl: "ui_cmo_gl",
+  /** A scope. */
+  scope: "ui_cmo_scope",
+  /** A faction patch. */
+  patch: "ui_cmo_patch",
+  /** A box being unpacked. */
+  unpack: "ui_cmo_unpack",
   /** Stacked boxes. */
-  boxes: "ui_cmi_boxes",
+  boxes: "ui_cmo_boxes",
   /** An "i" in a circle. */
-  info: "ui_cmi_info",
+  info: "ui_cmo_info",
   /** Wrench and screwdriver. */
-  tools: "ui_cmi_tools",
-  /** A hammer. */
-  hammer: "ui_cmi_hammer",
+  tools: "ui_cmo_tools",
+  /** An open book. */
+  book: "ui_cmo_book",
   /** Bullets. */
-  bullets: "ui_cmi_bullets",
+  bullets: "ui_cmo_bullets",
   /** A wrapped gift. */
-  gift: "ui_cmi_gift",
+  gift: "ui_cmo_gift",
   /** A backpack. */
-  backpack: "ui_cmi_backpack",
+  backpack: "ui_cmo_backpack",
   // Declared and available, but no action uses them yet.
   /** A filled star. */
-  star: "ui_cmi_star",
+  star: "ui_cmo_star",
   /** An outlined star. */
-  unstar: "ui_cmi_unstar",
+  unstar: "ui_cmo_unstar",
   /** Arrows. */
-  arrows: "ui_cmi_arrows",
+  arrows: "ui_cmo_arrows",
   /** Fork and knife. */
-  utensils: "ui_cmi_utensils",
+  utensils: "ui_cmo_utensils",
   /** A downward arrow. */
-  arrow_down: "ui_cmi_arrow_down",
+  arrow_down: "ui_cmo_arrow_down",
   /** A saw. */
-  saw: "ui_cmi_saw",
+  saw: "ui_cmo_saw",
   /** A division sign. */
-  divide: "ui_cmi_divide",
+  divide: "ui_cmo_divide",
 
   // Still borrowed from vanilla, for actions the sheet does not cover yet.
-  /** 100² — walking figure. */
-  move: "ui_companion_movement",
-  /** 100² — loot bag. */
-  loot: "ui_companion_loot",
-  /** 121² — workbench. */
-  craft: "ui_inGame2_Craft",
-  /** 72×58 — armour vest, from the inventory sort bar. */
-  armor: "ui_btn_sort_outfit_e",
   /** 50² — a battery, cropped from the item atlas. */
-  battery: "ui_cmi_battery",
-  /** 19² — approximate. */
-  attach: "ui_wp_prop_scope_attach",
+  battery: "ui_cmo_battery",
   /** 27² — approximate; a backpack stash. */
   stash: "ui_inGame2_PDA_icon_backpackstash",
   /** 15² — approximate; a generic marker. */
@@ -83,28 +89,38 @@ export default (t: Texts) => {
       section: "icons",
       entries: {
         use: icon.utensils,
-        attach_1: icon.attach,
-        attach_2: icon.attach,
-        attach_3: icon.attach,
+        // The bare keys are the fallback; the `@sil`/`@scope`/`@gl` variants below are what actually resolve, since the slot number says nothing about the attachment.
+        attach_1: icon.scope,
+        attach_2: icon.scope,
+        attach_3: icon.scope,
+        "attach_1@sil": icon.silencer,
+        "attach_2@sil": icon.silencer,
+        "attach_3@sil": icon.silencer,
+        "attach_1@scope": icon.scope,
+        "attach_2@scope": icon.scope,
+        "attach_3@scope": icon.scope,
+        "attach_1@gl": icon.gl,
+        "attach_2@gl": icon.gl,
+        "attach_3@gl": icon.gl,
         // `to_slot` and `to_ruck` carry item-class variants: the script tries `<key>@<class>`
         // before the bare key, so "wear backpack" and "equip outfit" — which share a property
         // key and differ only in label — can still differ in icon. The bare key is the
         // fallback the game labels "move to slot" / "unequip".
         to_slot: icon.hand,
-        "to_slot@outfit": icon.armor,
-        "to_slot@helmet": icon.armor,
+        "to_slot@outfit": icon.vest,
+        "to_slot@helmet": icon.helmet,
         "to_slot@backpack": icon.backpack,
         to_ruck: icon.backpack,
-        "to_ruck@outfit": icon.armor,
-        "to_ruck@helmet": icon.armor,
+        "to_ruck@outfit": icon.vest,
+        "to_ruck@helmet": icon.helmet,
         "to_ruck@backpack": icon.backpack,
         move: icon.arrows,
         move_all: icon.arrows,
         donate: icon.gift,
         unload: icon.bullets,
-        detach_silencer: icon.attach,
-        detach_scope: icon.attach,
-        detach_gl: icon.attach,
+        detach_silencer: icon.silencer,
+        detach_scope: icon.scope,
+        detach_gl: icon.gl,
         drop: icon.arrow_down,
         drop_all: icon.arrow_down,
 
@@ -129,14 +145,15 @@ export default (t: Texts) => {
         "ui_itm_details.menu_details": icon.info,
         "item_backpack.menu_stash": icon.stash,
         "item_repair.menu_tool": icon.tools,
-        "item_recipe.menu_read": icon.craft,
+        "item_recipe.menu_read": icon.book,
         "item_device.menu_battery": icon.battery,
-        "itms_manager.menu_unpack": icon.boxes,
+        "itms_manager.menu_unpack": icon.unpack,
         "itms_manager.menu_open": icon.boxes,
         "bind_container.access_inventory": icon.boxes,
-        "item_weapon.menu_scope_inv": icon.attach,
+        "item_weapon.menu_scope_inv": icon.scope,
         "itms_manager.menu_place": icon.mark,
         "item_tent.str_use": icon.mark,
+        "gameplay_disguise.menu_patch": icon.patch,
       },
     }),
     // Icons keyed on the row's label. Checked before everything else, because the label is
@@ -148,7 +165,7 @@ export default (t: Texts) => {
         st_rax_fav: icon.star,
         st_rax_unfav: icon.unstar,
         st_rax_junk: icon.trashbin,
-        st_rax_unjunk: icon.trashbin,
+        st_rax_unjunk: icon.untrashbin,
       },
     }),
     // Row grouping. Rows are ordered by group number and a divider is drawn wherever it
@@ -158,13 +175,10 @@ export default (t: Texts) => {
     f.ltx({
       section: "groups",
       entries: {
-        // 1 — information, which acts on nothing.
         "ui_itm_details.menu_details": 1,
-        // 2 is the default and needs no entries: everything else lands there.
-        // 3 — marking, which changes only how the item is displayed.
+        default: 2,
         DYN_FUNC_SP_fav: 3,
         DYN_FUNC_SP_junk: 3,
-        // 4 — destructive, last so it is never the accidental click.
         drop: 4,
         drop_all: 4,
         "item_parts.menu_disassembly": 4,
