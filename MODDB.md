@@ -1,6 +1,6 @@
 # Context Menu Overhaul
 
-This addon gives every context menu option a colored icon, groups related entries together with a divider between the groups, capitalizes the labels, and even more.
+This addon gives every context menu option a colored icon, groups related entries together with a divider between the groups, capitalizes the labels and even more.
 
 ## Options
 
@@ -14,13 +14,17 @@ All of it is toggleable in MCM, and all of it is on by default:
 
 ## Compatibility
 
-Works with addons that add their own entries to the menu.
+Works with addons that add their own entries to the menu. These already have icons out of the box:
 
-- SortingPlus by RavenAscendant.
+- SortingPlus by RavenAscendant
+- Quick Action Wheel by HarukaSai
+- Weapon Parts Overhaul by arti
+- Ammo Maker by arti
+- Indirect Parts Favoriter by G_FLAT
 
 ## For addon makers
 
-Create a DLTX patch named `mod_icons_<your addon>.ltx` in
+Create a DLTX patch named `mod_menu_<your addon>.ltx` in
 `configs/plugins/context_menu_overhaul/`.
 
 ```ini
@@ -53,6 +57,10 @@ Sections, all optional:
 
 Lookup: label, then property id, then functor. A missing entry means no icon.
 
+A label key may be either the text drawn on the row or the translation id behind it. Some addons
+translate their own labels before the menu sees them, so the id never arrives — writing the id still
+works, and keeps your icons working in every language.
+
 From a script:
 
 ```lua
@@ -60,6 +68,21 @@ local texture = context_menu_overhaul.get_icon(property_id, label, obj, functor)
 ```
 
 ## Changelog
+
+**1.3.0**
+
+- Icons for entries added by other addons: Ammo Maker, Quick Action Wheel, Weapon Parts Overhaul
+  and G_FLAT's Indirect Parts Favoriter
+- An entry can now be named in the config by its translation id even when the addon that owns it
+  hands the menu finished text, so icons no longer depend on the game's language
+- "Disassemble all" is grouped and colored with the other disassembly entries
+
+**1.2.0**
+
+- Russian translation
+- Fixed the MCM page still being titled "Context Menu Icons"
+- Renamed the config file from `icons.ltx` to `menu.ltx`. A DLTX patch written for 1.1.0 must be
+  renamed from `mod_icons_<addon>.ltx` to `mod_menu_<addon>.ltx`
 
 **1.1.0**
 

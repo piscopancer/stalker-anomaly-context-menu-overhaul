@@ -1,45 +1,27 @@
-## Next: keybinds for quick actions
+## Attempted and reverted: keybinds for quick actions
 
-An entry with a key declared in the ltx can be triggered from the keyboard while the menu is open,
-with the key drawn in a small box at the right end of its row. Safe to do: vanilla's
-`UICellProperties:OnKeyboard` returns `true` unconditionally, so the open menu already swallows every
-key except the mouse buttons and Escape, which it handles itself. Escape stays vanilla's.
+Built in 1.2.0 and taken back out. The feature itself worked — keys from `[keys]`, a hint box per
+row, dispatch identical to a click — but it cannot be made to coexist with the inventory's own key
+handling, and that is a property of Anomaly rather than of this implementation.
 
-First set: unload (u), mark/unmark favourite (f), mark/unmark junk (j), details (i), drop all (z),
-drop (x). Keys resolve like icons do — label, then property id, then functor — so keying the
-favourite toggle on its property id gives both of its states one key.
+The inventory sets `_GUIs_keyfree["UIInventory"] = true` (`ui_inventory.script:129`), so
+`KEYS_UNLOCK` stays true and every game binding keeps firing while the inventory is open. A key
+bound here therefore also runs whatever the player has that key bound to: pressing X to drop also
+opened the ammo wheel, which acts on key *release* (`item_weapon.script:976`). Suppressing that by
+registering our own non-key-free GUI works, but it splits the keystroke — the press is swallowed
+while the menu is open, the release is delivered after it closes — and lifting the lock on a timer
+instead did not fix the observed behaviour either.
 
-MCM gets a section of its own after the current options: a checkbox for the feature, and a modifier
-key to hold, defaulting to none.
+Anything future should start from the conclusion that a menu key and a game key are the same key,
+and either pick keys the game does not bind, or find out how the engine decides a dialog has
+consumed a keystroke, rather than fighting `KEYS_UNLOCK` from script.
 
-Triggering must go through vanilla's own dispatch — `owner[item.func](owner, unpack(item.params))`,
-then `action_moment`, then `OnHide()`, as `OnListItemDbClicked` does — so third-party actions behave
-identically. Inert rows carry no `func` and are skipped.
-
-The hint box is `ui_inGame2_arrow_button_e` from `ui\ui_actor_multiplayer_game_menu` (454,640, 36x20),
-which ships `_h`, `_t` and `_d` variants too — `_h` while the modifier is held would show the binds
-are armed. `CUIStatic` exports `SetText`, `SetFont`, `SetTextColor` and `SetTextAlignment` as well as
-the texture calls, so one `AddIconField` child is both the box and the centred letter. Note that
-`SetStretchTexture` stretches the whole bitmap rather than nine-slicing it, so the border distorts
-unless the box stays near its 36x20 aspect; that argues for single-character binds.
-
-Open questions, in the order they need answering:
-
-- **Modifier state.** Anomaly has no `IsKeyDown`; scripts track modifiers from keydown/keyup events,
-  which we only see while the dialog holds focus. A modifier held *before* the right-click is
-  therefore invisible to us, which is exactly how a player would hold it.
-- **Destructive keys.** Drop (x) and drop all (z) are adjacent, and with no modifier a mis-hit dumps
-  a stack on the floor. Either default the modifier to something, or let the ltx mark an entry as
-  requiring it.
-- **Layout.** The hint box needs a right column reserved on every row, like the icon column on the
-  left, and can only be placed in the late pass once `W` is final.
-- **Keyboard layouts.** DIK codes are physical scancodes, so `x` is a position; on AZERTY the hint
-  box would name a key the player is not pressing. Possibly an optional display string in the ltx.
-- **Duplicate keys.** Across DLTX files the last merge wins, which is fine. Within a built menu, take
-  the first match in row order so it does not depend on merge order.
-
-Idea worth weighing: number keys 1–9 selecting the Nth visible row, which needs no configuration and
-covers every addon's entries for free.
+The parts worth keeping if it is tried again: keys resolve like icons do (label, property id,
+functor), so a toggle keyed on its property id covers both states; `DIK_ESCAPE` must stay with the
+menu's own handler; MCM's `kb_mod_radio` plus `get_mod_key` handle the modifier, including one held
+before the right-click, so nothing needs tracking here; and `CUIStatic` reaches its text only
+through `TextControl`, whose `CUILines` has no alignment, so a hint box needs `AddIconField` for the
+box and `AddTextField` for the letter.
 
 ## Ideas, in rough order of value
 

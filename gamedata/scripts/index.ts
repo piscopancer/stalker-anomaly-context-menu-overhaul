@@ -34,7 +34,7 @@ const DEFAULT_GROUP = 2
 /** The `UIInventory.properties` key prefix marking an addon-owned custom slot. */
 const CUSTOM_PREFIX = "custom_"
 
-const ini = new ini_file_ex("plugins\\context_menu_overhaul\\icons.ltx")
+const ini = new ini_file_ex("plugins\\context_menu_overhaul\\menu.ltx")
 
 const { vec, parse_hex, capitalize } = context_menu_overhaul_utils
 
@@ -86,6 +86,30 @@ function resolve<T>(
   return null
 }
 
+/** The sections keyed on a row's label rather than on its property id or functor. */
+type LabelSection = "label_icons" | "groups" | "colors"
+
+/**
+ * The key naming this row in `section`: the label itself, or a translation id that renders to
+ * it. Several addons call `game.translate_string` inside their own name functor and hand back
+ * finished text, so the id never reaches this addon and a config could otherwise only name
+ * such a row in one language. Comparing translations lets it be named by id regardless.
+ */
+function label_key(section: LabelSection, label: string) {
+  if (ini.line_exist(section, label)) {
+    return label
+  }
+  const entries = ini.collect_section(section)
+  if (entries) {
+    for (const [key] of pairs(entries)) {
+      if (game.translate_string(key) === label) {
+        return key
+      }
+    }
+  }
+  return label
+}
+
 /** The item class an entry acts on, mirroring `UIInventory:Name_Equip`, so `to_slot` can carry a different icon per class as its label does. */
 function get_variant(obj: CGameObject) {
   const clsid = obj.clsid()
@@ -109,7 +133,7 @@ export function get_icon(
   functor?: FunctorKey,
 ) {
   if (label) {
-    const by_label = ini.r_string_ex("label_icons", label)
+    const by_label = ini.r_string_ex("label_icons", label_key("label_icons", label))
     if (by_label) {
       return by_label
     }
@@ -131,7 +155,7 @@ export function get_icon(
 /** Rows are ordered by group and a divider is drawn wherever it changes. */
 function get_group(property_id: string, label?: string, functor?: FunctorKey) {
   return (
-    resolve(row_keys(property_id, label, functor), (key) =>
+    resolve(row_keys(property_id, label && label_key("groups", label), functor), (key) =>
       ini.r_float_ex("groups", key),
     ) ??
     ini.r_float_ex("groups", DEFAULT_GROUP_KEY) ??
@@ -141,7 +165,7 @@ function get_group(property_id: string, label?: string, functor?: FunctorKey) {
 
 /** The row's icon tint as an argb value, or `null` to leave the texture as authored. */
 function get_color(property_id: string, label?: string, functor?: FunctorKey) {
-  return resolve(row_keys(property_id, label, functor), (key) => {
+  return resolve(row_keys(property_id, label && label_key("colors", label), functor), (key) => {
     const hex = ini.r_string_ex("colors", key)
     return hex ? parse_hex(trim(hex)) : null
   })

@@ -6,7 +6,7 @@ red, labels are capitalized, and the "Details" entry shows the item's own name. 
 no exe patch, save-safe.
 
 Everything except the drawing itself is data. The mapping from menu entry to icon, group and colour
-lives in `configs/plugins/context_menu_overhaul/icons.ltx`, which any addon extends through DLTX
+lives in `configs/plugins/context_menu_overhaul/menu.ltx`, which any addon extends through DLTX
 without this addon knowing it exists.
 
 ## Options
@@ -24,7 +24,7 @@ with everything on.
 
 ## Configuration
 
-Ship a DLTX patch named `mod_icons_<your addon>.ltx` in `configs/plugins/context_menu_overhaul/`.
+Ship a DLTX patch named `mod_menu_<your addon>.ltx` in `configs/plugins/context_menu_overhaul/`.
 It merges on load, and if the player does not have this addon installed the file is never read — so
 this is not a dependency.
 
@@ -54,7 +54,10 @@ Every section is optional, and a missing entry means "no icon" rather than an er
   This is how `custom_1..10` entries are identified, since the slot number is positional and says
   nothing about which addon owns it.
 - **`[label_icons]`** — keyed on the entry's translation id. The only key that changes when an
-  action toggles, so it is where "mark as favourite" and "unmark" get different icons.
+  action toggles, so it is where "mark as favourite" and "unmark" get different icons. A key that
+  does not match the label directly is compared against its own translation, so an entry whose addon
+  hands the menu finished text — several do — can still be named by id rather than by the text of one
+  language.
 - **`[groups]`** — a number per entry. Entries are ordered by it and a divider is drawn wherever it
   changes; within a group the game's own order is kept. The `default` key holds the group everything
   unlisted falls into.

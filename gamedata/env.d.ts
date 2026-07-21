@@ -34,7 +34,7 @@ declare global {
   }
 
   /**
-   * A texture reference as written in `icons.ltx`. `CUITextureMaster::InitTexture` looks
+   * A texture reference as written in `menu.ltx`. `CUITextureMaster::InitTexture` looks
    * the string up among the ids registered from `textures_desc` xml and, on a miss, falls
    * through to `CreateShader` with the string as a direct texture path — so a raw path
    * like `ui\ui_cmo_icons\use` resolves without any xml declaration.
@@ -77,6 +77,10 @@ declare global {
       ui_cmo_arrow_down: true
       ui_cmo_saw: true
       ui_cmo_divide: true
+      ui_cmo_pie: true
+      ui_cmo_components: true
+      ui_cmo_components_star: true
+      ui_cmo_tape: true
     }
   }
 
@@ -112,12 +116,12 @@ declare global {
   type FunctorKey = `${string}.${string}`
 
   /**
-   * `configs\plugins\context_menu_overhaul\icons.ltx`. Both sections are open-ended on
-   * purpose: other addons extend them through DLTX (`mod_icons_<addon>.ltx`) with keys
+   * `configs\plugins\context_menu_overhaul\menu.ltx`. Both sections are open-ended on
+   * purpose: other addons extend them through DLTX (`mod_menu_<addon>.ltx`) with keys
    * this addon has never heard of, and a missing key simply means the row draws without
    * an icon.
    */
-  interface ContextMenuIconsIni {
+  interface ContextMenuIni {
     /** Keyed on the `UIInventory.properties` key. */
     icons: Partial<Record<PropertyId, IconTexture>> &
       Record<string, IconTexture>
@@ -146,7 +150,7 @@ declare global {
   }
 
   interface IniFileSchemas {
-    "plugins\\context_menu_overhaul\\icons.ltx": ContextMenuIconsIni
+    "plugins\\context_menu_overhaul\\menu.ltx": ContextMenuIni
   }
 
   /**

@@ -1,7 +1,8 @@
 import type { FileExtension, Texts } from "anomaly-packer"
 
-// Emitted as `icons.ltx`. Other addons extend it through DLTX by shipping their own
-// `mod_icons_<addon>.ltx` with the same section names, which needs no cooperation from
+// Emitted as `menu.ltx`: everything about a menu row that is data rather than drawing —
+// its icon, colour and group. Other addons extend it through DLTX by shipping their own
+// `mod_menu_<addon>.ltx` with the same section names, which needs no cooperation from
 // this file.
 export const extension: FileExtension = "ltx"
 
@@ -67,6 +68,14 @@ const icon = {
   saw: "ui_cmo_saw",
   /** A division sign. */
   divide: "ui_cmo_divide",
+  /** A pie split into quarters, for the radial action wheel. */
+  pie: "ui_cmo_pie",
+  /** Four loose components. */
+  components: "ui_cmo_components",
+  /** Four components with a star. */
+  components_star: "ui_cmo_components_star",
+  /** A roll of tape. */
+  tape: "ui_cmo_tape",
 
   // Still borrowed from vanilla, for actions the sheet does not cover yet.
   /** 50² — a battery, cropped from the item atlas. */
@@ -81,7 +90,7 @@ const icon = {
 } as const satisfies Record<string, UI.TextureId>
 
 export default (t: Texts) => {
-  const f = t.forFile<ContextMenuIconsIni>()
+  const f = t.forFile<ContextMenuIni>()
   return [
     // The built-in `UIInventory.properties` keys. Entries that are the same action on
     // different slots (`attach_1..3`, the three `detach_*`) share an icon.
@@ -166,6 +175,22 @@ export default (t: Texts) => {
         st_rax_unfav: icon.unstar,
         st_rax_junk: icon.trashbin,
         st_rax_unjunk: icon.untrashbin,
+
+        // Third-party support, all keyed by translation id. Only the first two arrive as an
+        // id; the rest are already translated by the time they reach the menu, because their
+        // addons call `game.translate_string` inside their own name functor. Both work here:
+        // a key that does not match the drawn text is compared against its translation. Absent
+        // the addon, the key simply never matches.
+        /** 145- Ammo Maker: bulk disassembly of an ammo stack. */
+        st_batch_breakdown: icon.saw,
+        /** 446- Quick Action Wheel. */
+        ui_haru_add_item_to_qaw: icon.pie,
+        /** 140- Weapon Parts Overhaul: remove a part. */
+        st_field_strip: icon.components,
+        /** 140- Weapon Parts Overhaul: maintain parts. */
+        st_wpo_replace_parts: icon.tape,
+        /** G_FLAT's Indirect Parts Favoriter. */
+        st_favorite_parts: icon.components_star,
       },
     }),
     // Row grouping. Rows are ordered by group number and a divider is drawn wherever it
@@ -182,6 +207,8 @@ export default (t: Texts) => {
         drop: 4,
         drop_all: 4,
         "item_parts.menu_disassembly": 4,
+        // 145- Ammo Maker's bulk disassembly, next to the disassembly it is a variant of.
+        st_batch_breakdown: 4,
       },
     }),
     // Per-row text colour, resolved like the icons. Only the destructive rows are coloured;
@@ -192,6 +219,8 @@ export default (t: Texts) => {
         drop: "#7d7d7d",
         drop_all: "#7d7d7d",
         "item_parts.menu_disassembly": "#c6645d",
+        // 145- Ammo Maker's bulk disassembly: the same action on a whole stack, so the same red.
+        st_batch_breakdown: "#c6645d",
         st_rax_fav: "#dec983",
         st_rax_unfav: "#dec983",
         st_rax_junk: "#7d7d7d",

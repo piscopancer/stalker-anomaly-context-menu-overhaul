@@ -39,6 +39,10 @@ const icons: UI.TextureRect[] = [
   cell("ui_cmo_scope", 1, 5),
   cell("ui_cmo_patch", 2, 5),
   cell("ui_cmo_unpack", 3, 5),
+  cell("ui_cmo_pie", 0, 6),
+  cell("ui_cmo_components", 1, 6),
+  cell("ui_cmo_components_star", 2, 6),
+  cell("ui_cmo_tape", 3, 6),
 ]
 
 export default (t: Texts) =>
