@@ -7,7 +7,7 @@ This addon gives every context menu option a colored icon, groups related entrie
 All of it is toggleable in MCM, and all of it is on by default:
 
 - Group related actions
-- Show colored icons
+- Use colors
 - Show separators
 - Details option shows item's name
 - Capitalize options
@@ -46,7 +46,8 @@ A value is a `textures_descr` id or a path to a dds file.
 Sections, all optional:
 
 - `[icons]` - property id (`use`, `to_slot`, `drop`). Add `@<class>` for a per-item icon:
-  `outfit`, `helmet`, `backpack`, `artefact`, `sil`, `scope`, `gl`.
+  `outfit`, `helmet`, `backpack`, `artefact`, `sil`, `scope`, `gl`, and for the `use` row the
+  consumable kinds `food`, `drink`, `medkit`, `smoke`.
 - `[functor_icons]` - `<script>.<function>` from the item's `useN_functor`. This is how
   `custom_1..10` entries are identified.
 - `[label_icons]` - translation id. The only key that changes when an action toggles, so
@@ -68,6 +69,18 @@ local texture = context_menu_overhaul.get_icon(property_id, label, obj, functor)
 ```
 
 ## Changelog
+
+**1.3.1**
+
+- Colors now apply to the whole row, label text included, not just the icon. The MCM option is
+  renamed "Use colors"
+- The "Use" entry carries a distinct icon per consumable: a glass for drinks, cutlery for food,
+  a cross for medicine and a cigarette for smokes, with a neutral hands icon for anything else,
+  instead of one shared glyph for all of them
+- Icons for GAMMA Mags Reloaded: magazine actions (eject, unload, loadout, retool), armour
+  pouches and weapon side saddles
+- Icon for reading a looted stalker's PDA
+- "Drop" now sits above "Disassemble" rather than below
 
 **1.3.0**
 

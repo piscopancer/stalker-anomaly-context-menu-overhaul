@@ -15,7 +15,7 @@ declare global {
    */
   interface McmConfig {
     group_related_actions: boolean
-    show_colored_icons: boolean
+    use_colors: boolean
     show_separators: boolean
     details_shows_item_name: boolean
     capitalize_labels: boolean
@@ -52,18 +52,9 @@ declare global {
      * for what each glyph depicts rather than for the action that happens to use it.
      */
     interface Textures {
-      ui_cmo_battery: true
-      ui_cmo_trashbin: true
-      ui_cmo_untrashbin: true
+      ui_cmo_placeholder: true
       ui_cmo_vest: true
-      ui_cmo_helmet: true
-      ui_cmo_silencer: true
-      ui_cmo_gl: true
-      ui_cmo_scope: true
-      ui_cmo_patch: true
-      ui_cmo_unpack: true
-      ui_cmo_boxes: true
-      ui_cmo_hand: true
+      ui_cmo_cell: true
       ui_cmo_info: true
       ui_cmo_tools: true
       ui_cmo_bullets: true
@@ -77,10 +68,26 @@ declare global {
       ui_cmo_arrow_down: true
       ui_cmo_saw: true
       ui_cmo_divide: true
+      ui_cmo_trashbin: true
+      ui_cmo_untrashbin: true
+      ui_cmo_helmet: true
+      ui_cmo_silencer: true
+      ui_cmo_gl: true
+      ui_cmo_scope: true
+      ui_cmo_patch: true
+      ui_cmo_unpack: true
       ui_cmo_pie: true
-      ui_cmo_components: true
+      ui_cmo_screwdriver: true
       ui_cmo_components_star: true
-      ui_cmo_tape: true
+      ui_cmo_oil: true
+      ui_cmo_pda: true
+      ui_cmo_magazine: true
+      ui_cmo_health: true
+      ui_cmo_water: true
+      ui_cmo_hands: true
+      ui_cmo_cigarette: true
+      // original game assets
+      ui_cmo_battery: true
     }
   }
 

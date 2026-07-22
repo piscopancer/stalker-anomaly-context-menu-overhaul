@@ -42,7 +42,7 @@ const { vec, parse_hex, capitalize } = context_menu_overhaul_utils
 const settings: McmConfig = {
   // Field by field rather than a spread: a spread makes the transpiler define a global `ObjectAssign` in Anomaly's shared Lua state.
   group_related_actions: context_menu_overhaul_mcm.defaultConfig.group_related_actions,
-  show_colored_icons: context_menu_overhaul_mcm.defaultConfig.show_colored_icons,
+  use_colors: context_menu_overhaul_mcm.defaultConfig.use_colors,
   show_separators: context_menu_overhaul_mcm.defaultConfig.show_separators,
   details_shows_item_name: context_menu_overhaul_mcm.defaultConfig.details_shows_item_name,
   capitalize_labels: context_menu_overhaul_mcm.defaultConfig.capitalize_labels,
@@ -56,7 +56,7 @@ function load_settings() {
   settings.group_related_actions = ui_mcm.get(
     "context_menu_overhaul/group_related_actions",
   )
-  settings.show_colored_icons = ui_mcm.get("context_menu_overhaul/show_colored_icons")
+  settings.use_colors = ui_mcm.get("context_menu_overhaul/use_colors")
   settings.show_separators = ui_mcm.get("context_menu_overhaul/show_separators")
   settings.details_shows_item_name = ui_mcm.get(
     "context_menu_overhaul/details_shows_item_name",
@@ -122,6 +122,12 @@ function get_variant(obj: CGameObject) {
   if (IsItem("sil", sec)) return "sil"
   if (IsItem("scope", sec)) return "scope"
   if (IsItem("gl", sec)) return "gl"
+  // Consumables key off `kind`, the field the base game itself categorises items by, so the `use` row can differ between drink, food and meds rather than sharing one glyph.
+  const kind = SYS_GetParam<string>(0, sec, "kind")
+  // Cigarettes, cigars and joints share `i_drink` but carry a `required_tool` (a light); they are smokes, not beverages, and get their own glyph rather than the glass.
+  if (kind === "i_drink") return SYS_GetParam<string>(0, sec, "required_tool") ? "smoke" : "drink"
+  if (kind === "i_food" || kind === "i_mutant_cooked" || kind === "i_mutant_raw") return "food"
+  if (kind === "i_medical") return "medkit"
   return null
 }
 
@@ -511,6 +517,13 @@ const add_item_to_list = function (
   // Icons key on the raw translation id `InitProperties` collected, not on the text drawn, which this addon may have rewritten.
   const labels = this.cmo_labels
   const label = labels ? labels[row] : str_id
+
+  // Colours both the label and the glyph. Computed once, applied to the text even on rows that carry no icon.
+  const color = settings.use_colors ? get_color(key, label, functor) : null
+  if (color) {
+    text.SetTextColor(color)
+  }
+
   const texture = get_icon(key, label, obj, functor)
   if (!texture) {
     return
@@ -527,12 +540,8 @@ const add_item_to_list = function (
   icon.SetWndPos(vec(0, ICON_INSET))
   icon.SetWndSize(vec(width, icon_size(item)))
 
-  // Tints the glyph rather than the label, where a colour would read as the row being disabled.
-  if (settings.show_colored_icons) {
-    const color = get_color(key, label, functor)
-    if (color) {
-      icon.SetTextureColor(color)
-    }
+  if (color) {
+    icon.SetTextureColor(color)
   }
 }
 

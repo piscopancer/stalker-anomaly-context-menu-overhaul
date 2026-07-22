@@ -35,6 +35,48 @@ A registration helper for addons that would rather call a function than ship an 
 
 Artwork for the three entries still borrowed from vanilla textures: `battery`, `stash` and `mark`.
 
+## Third-party support to add: Anomaly Magazines Redux
+
+Registers its rows through `custom_functor_autoinject` in `magazines.script`, so they arrive as
+already-translated labels and are best keyed in `[label_icons]` like the other addons there. There
+are four of them. `st_mag_eject_magazine` pulls a loaded magazine out of a supported weapon back
+into the inventory (the `mags_load` functor, `check_eject_magazine`/`eject_magazine`).
+`st_mag_unload_ammo` empties the loose rounds out of a magazine item. `st_mag_loadout_add` and
+`st_mag_loadout_remove` are the two states of one toggle — whether the magazine is carried in the
+rig pouch that feeds quick reloads. `st_mag_retool` converts an empty magazine to another section
+with a `leatherman_tool`, and refuses while ammo remains.
+
+Icons all resolve from the existing sheet. Eject has no natural magazine glyph, so `arrow_down`
+reads best short of drawing one; unload takes `bullets`, mirroring vanilla's own `unload`; retool
+takes `tools`, since it consumes the leatherman; and the loadout toggle takes `vest` for the rig it
+acts on, with the option of splitting `backpack` for add against `vest` for remove if the two states
+should look different. The mod folder sits outside the packer's working dirs, so reading it back for
+the exact section names prompts for access.
+
+## Uncovered vanilla context-menu rows
+
+Every built-in `UIInventory.properties` id already has an icon; the gaps are all `custom_N`
+rows, i.e. vanilla items whose `useN_functor` names a `<script>.<function>` this addon does not
+key in `[functor_icons]` yet. Harvested by grepping every `useN_functor` across vanilla configs
+and diffing against `menu.ts`. What is left:
+
+`itms_manager.menu_play` — the "Play" action on musical instruments (guitar, harmonica),
+label `st_item_play`.
+
+`txr_mines.str_prox_plant`, `txr_mines.str_timer_plant_10`, `txr_mines.str_timer_plant_30` — the
+three plant actions on explosives: a proximity trigger and two timer lengths, labels
+`st_plant_explosive_prox` / `_timer_10` / `_timer_30`.
+
+`item_money.menu_money_100`, `_500`, `_1000`, `_5000` — split a chosen denomination off a money
+stack. The label is built at runtime with the amount, so these key by functor, not by label.
+
+Intentionally skipped: `ui_debug_launcher.menu_cond_dec` / `_inc` / `_release` exist only under the
+debug launcher and never appear in normal play, so they are not worth an icon.
+
+Note on the artefact container: opening one is not a new functor — lead containers, and every other
+openable container, use `bind_container.access_inventory`, which is already keyed (on the placeholder
+cell for now). So it is covered, just not yet given real artwork.
+
 ## Known limitations
 
 `attach_1..3` resolve through the item's section (`sil`, `scope`, `gl`) because the slot number is

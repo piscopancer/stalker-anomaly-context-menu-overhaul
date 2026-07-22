@@ -1,5 +1,7 @@
 import fs from "node:fs/promises"
 import path from "node:path"
+import { buildMetaIniContent } from "anomaly-packer"
+import pkg from "./package.json" with { type: "json" }
 
 // Copies the packed addon into Mod Organizer 2's mods folder, so testing a change is one
 // `pnpm build` rather than a build plus a manual copy.
@@ -25,7 +27,9 @@ const source = path.join(import.meta.dirname, "build", "gamedata")
 const target = path.join(modsDir, MOD_NAME)
 
 if (!(await fs.stat(source).catch(() => null))?.isDirectory()) {
-  throw new Error(`Nothing to deploy: ${source} does not exist. Run the build first.`)
+  throw new Error(
+    `Nothing to deploy: ${source} does not exist. Run the build first.`,
+  )
 }
 if (!(await fs.stat(modsDir).catch(() => null))?.isDirectory()) {
   throw new Error(
@@ -40,9 +44,14 @@ await fs.mkdir(target, { recursive: true })
 await fs.cp(source, path.join(target, "gamedata"), { recursive: true })
 
 // Without a meta.ini MO2 lists the mod as an unmanaged "backup" and nags on every refresh.
+// Version is taken from package.json so MO2's pane matches the real addon version instead of
+// a stale hardcoded string.
 await fs.writeFile(
   path.join(target, "meta.ini"),
-  ["[General]", "modid=0", "version=d1.0.0", "category=0", ""].join("\n"),
+  buildMetaIniContent({
+    version: pkg.version,
+    url: pkg.homepage,
+  }),
 )
 
 console.log(`Deployed to ${target}`)

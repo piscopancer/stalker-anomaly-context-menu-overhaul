@@ -22,11 +22,40 @@ const CP1251_CASE_GAP = 32
 const CP1251_YO = 184
 const CP1251_YO_UPPER = 168
 
+/**
+ * A UTF-8 multibyte sequence: a lead byte `0xC2`-`0xF4` followed by a continuation byte
+ * `0x80`-`0xBF`. The CP1251 case logic below reads a byte as a whole letter, so a CJK
+ * localization (Chinese, Korean, Japanese) — whose glyphs are UTF-8, and whose 3-byte lead
+ * bytes `0xE0`-`0xEF` land inside the Cyrillic range — would have its first byte rewritten
+ * and the sequence corrupted, dropping the label entirely. CP1251 Cyrillic is unaffected:
+ * its second letter byte is `>= 0xC0`, never a `0x80`-`0xBF` continuation byte.
+ */
+const UTF8_LEAD_MIN = 0xc2
+const UTF8_LEAD_MAX = 0xf4
+const UTF8_CONT_MIN = 0x80
+const UTF8_CONT_MAX = 0xbf
+
+function is_utf8_multibyte(text: string) {
+  const [lead, cont] = string.byte(text, 1, 2)
+  return (
+    lead !== undefined &&
+    cont !== undefined &&
+    lead >= UTF8_LEAD_MIN &&
+    lead <= UTF8_LEAD_MAX &&
+    cont >= UTF8_CONT_MIN &&
+    cont <= UTF8_CONT_MAX
+  )
+}
+
 /** Upper-cases the first character, leaving the rest as authored so an acronym like "PDA" survives. */
 export function capitalize(text: string) {
   const rest = string.sub(text, 2)
   const first = string.byte(text)
   if (!first) {
+    return text
+  }
+  // A UTF-8 glyph has no single-byte case; touching its lead byte only corrupts it.
+  if (is_utf8_multibyte(text)) {
     return text
   }
   if (first >= CP1251_A && first <= CP1251_YA) {

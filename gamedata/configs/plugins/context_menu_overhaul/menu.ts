@@ -1,104 +1,58 @@
 import type { FileExtension, Texts } from "anomaly-packer"
 
-// Emitted as `menu.ltx`: everything about a menu row that is data rather than drawing —
-// its icon, colour and group. Other addons extend it through DLTX by shipping their own
-// `mod_menu_<addon>.ltx` with the same section names, which needs no cooperation from
-// this file.
 export const extension: FileExtension = "ltx"
 
-/**
- * Icons borrowed from vanilla Anomaly's own `textures_desc` ids, chosen for meaning rather
- * than for looks. A value can be either a `textures_desc` id (as here) or a raw DDS path —
- * `CUITextureMaster::InitTexture` falls through to treating an unregistered name as a path —
- * so swapping in bespoke artwork later is a matter of changing the values and nothing else.
- *
- * Rows are drawn stretched into a square slot, so only square or near-square source rects are
- * used; vanilla's button strips and encyclopedia banners would distort badly. The entries
- * marked below as approximate are the small 15–27px textures, which upscale noticeably softer
- * than the rest — they are here for coverage, and are the first ones worth replacing.
- */
 const icon = {
-  // The addon's own sheet (`textures/ui/cmo_icons.dds`), 64² cells drawn for this menu.
-  /** A hand. */
-  hand: "ui_cmo_hand",
-  /** A trash bin. */
+  placeholder: "ui_cmo_placeholder",
   trashbin: "ui_cmo_trashbin",
-  /** A crossed-out trash bin. */
   untrashbin: "ui_cmo_untrashbin",
-  /** A body armour vest. */
   vest: "ui_cmo_vest",
-  /** A helmet. */
   helmet: "ui_cmo_helmet",
-  /** A silencer. */
   silencer: "ui_cmo_silencer",
-  /** An underbarrel grenade launcher. */
   gl: "ui_cmo_gl",
-  /** A scope. */
   scope: "ui_cmo_scope",
-  /** A faction patch. */
   patch: "ui_cmo_patch",
-  /** A box being unpacked. */
   unpack: "ui_cmo_unpack",
-  /** Stacked boxes. */
-  boxes: "ui_cmo_boxes",
-  /** An "i" in a circle. */
+  cell: "ui_cmo_cell",
   info: "ui_cmo_info",
-  /** Wrench and screwdriver. */
   tools: "ui_cmo_tools",
-  /** An open book. */
   book: "ui_cmo_book",
-  /** Bullets. */
   bullets: "ui_cmo_bullets",
-  /** A wrapped gift. */
   gift: "ui_cmo_gift",
-  /** A backpack. */
   backpack: "ui_cmo_backpack",
-  // Declared and available, but no action uses them yet.
-  /** A filled star. */
   star: "ui_cmo_star",
-  /** An outlined star. */
   unstar: "ui_cmo_unstar",
-  /** Arrows. */
   arrows: "ui_cmo_arrows",
-  /** Fork and knife. */
   utensils: "ui_cmo_utensils",
-  /** A downward arrow. */
   arrow_down: "ui_cmo_arrow_down",
-  /** A saw. */
   saw: "ui_cmo_saw",
-  /** A division sign. */
   divide: "ui_cmo_divide",
-  /** A pie split into quarters, for the radial action wheel. */
   pie: "ui_cmo_pie",
-  /** Four loose components. */
-  components: "ui_cmo_components",
-  /** Four components with a star. */
+  components: "ui_cmo_screwdriver",
   components_star: "ui_cmo_components_star",
-  /** A roll of tape. */
-  tape: "ui_cmo_tape",
-
-  // Still borrowed from vanilla, for actions the sheet does not cover yet.
-  /** 50² — a battery, cropped from the item atlas. */
+  oil: "ui_cmo_oil",
+  pda: "ui_cmo_pda",
+  magazine: "ui_cmo_magazine",
+  health: "ui_cmo_health",
+  water: "ui_cmo_water",
+  hands: "ui_cmo_hands",
+  cigarette: "ui_cmo_cigarette",
   battery: "ui_cmo_battery",
-  /** 27² — approximate; a backpack stash. */
   stash: "ui_inGame2_PDA_icon_backpackstash",
-  /** 15² — approximate; a generic marker. */
   mark: "ui_icons_newPDA_mark_e",
-  // `satisfies` rather than an annotation: the values are checked against the generated union
-  // of vanilla texture ids (and autocomplete as they are typed) while the keys stay literal,
-  // so the entries below still bind to the ltx schema.
 } as const satisfies Record<string, UI.TextureId>
 
 export default (t: Texts) => {
   const f = t.forFile<ContextMenuIni>()
   return [
-    // The built-in `UIInventory.properties` keys. Entries that are the same action on
-    // different slots (`attach_1..3`, the three `detach_*`) share an icon.
     f.ltx({
       section: "icons",
       entries: {
-        use: icon.utensils,
-        // The bare keys are the fallback; the `@sil`/`@scope`/`@gl` variants below are what actually resolve, since the slot number says nothing about the attachment.
+        use: icon.hands,
+        "use@food": icon.utensils,
+        "use@drink": icon.water,
+        "use@medkit": icon.health,
+        "use@smoke": icon.cigarette,
         attach_1: icon.scope,
         attach_2: icon.scope,
         attach_3: icon.scope,
@@ -111,11 +65,7 @@ export default (t: Texts) => {
         "attach_1@gl": icon.gl,
         "attach_2@gl": icon.gl,
         "attach_3@gl": icon.gl,
-        // `to_slot` and `to_ruck` carry item-class variants: the script tries `<key>@<class>`
-        // before the bare key, so "wear backpack" and "equip outfit" — which share a property
-        // key and differ only in label — can still differ in icon. The bare key is the
-        // fallback the game labels "move to slot" / "unequip".
-        to_slot: icon.hand,
+        to_slot: icon.cell,
         "to_slot@outfit": icon.vest,
         "to_slot@helmet": icon.helmet,
         "to_slot@backpack": icon.backpack,
@@ -132,20 +82,10 @@ export default (t: Texts) => {
         detach_gl: icon.gl,
         drop: icon.arrow_down,
         drop_all: icon.arrow_down,
-
-        // Third-party support: SortingPlus (RavenAscendant). Its rows are registered through
-        // `rax_dynamic_custom_functor`, which writes them into `UIInventory.properties` as
-        // `DYN_FUNC_<name>` — ordinary property ids, so they need no functor lookup. These
-        // are the fallback; `[label_icons]` below distinguishes the toggled states. Absent
-        // SortingPlus, the keys simply never match.
         DYN_FUNC_SP_fav: icon.star,
         DYN_FUNC_SP_junk: icon.trashbin,
       },
     }),
-    // Icons for `custom_N` rows, keyed on the `<script>.<function>` pair the item's own
-    // `useN_functor` names — the slot number is not a stable identity, the functor is. These
-    // cover the functors stock Anomaly ships; contributing addons add their own through DLTX
-    // against this same section.
     f.ltx({
       section: "functor_icons",
       entries: {
@@ -156,18 +96,20 @@ export default (t: Texts) => {
         "item_repair.menu_tool": icon.tools,
         "item_recipe.menu_read": icon.book,
         "item_device.menu_battery": icon.battery,
+        "ui_pda_npc_tab.menu_view": icon.pda,
         "itms_manager.menu_unpack": icon.unpack,
-        "itms_manager.menu_open": icon.boxes,
-        "bind_container.access_inventory": icon.boxes,
+        "itms_manager.menu_open": icon.unpack,
+        "bind_container.access_inventory": icon.unpack,
         "item_weapon.menu_scope_inv": icon.scope,
         "itms_manager.menu_place": icon.mark,
         "item_tent.str_use": icon.mark,
         "gameplay_disguise.menu_patch": icon.patch,
+        "mag_pouches.precond_install": icon.magazine,
+        "speed_loaders.precond_install": icon.magazine,
+        "speed_loaders.precond_install_shotgun": icon.magazine,
+        "speed_loaders.precond_install_rifle": icon.magazine,
       },
     }),
-    // Icons keyed on the row's label. Checked before everything else, because the label is
-    // the only thing that changes when an action toggles: SortingPlus keeps one property id
-    // for "mark as favourite" and "unmark", and only the translation id tells them apart.
     f.ltx({
       section: "label_icons",
       entries: {
@@ -175,28 +117,20 @@ export default (t: Texts) => {
         st_rax_unfav: icon.unstar,
         st_rax_junk: icon.trashbin,
         st_rax_unjunk: icon.untrashbin,
-
-        // Third-party support, all keyed by translation id. Only the first two arrive as an
-        // id; the rest are already translated by the time they reach the menu, because their
-        // addons call `game.translate_string` inside their own name functor. Both work here:
-        // a key that does not match the drawn text is compared against its translation. Absent
-        // the addon, the key simply never matches.
-        /** 145- Ammo Maker: bulk disassembly of an ammo stack. */
         st_batch_breakdown: icon.saw,
-        /** 446- Quick Action Wheel. */
         ui_haru_add_item_to_qaw: icon.pie,
-        /** 140- Weapon Parts Overhaul: remove a part. */
         st_field_strip: icon.components,
-        /** 140- Weapon Parts Overhaul: maintain parts. */
-        st_wpo_replace_parts: icon.tape,
-        /** G_FLAT's Indirect Parts Favoriter. */
+        st_wpo_replace_parts: icon.oil,
         st_favorite_parts: icon.components_star,
+        st_mag_eject_magazine: icon.magazine,
+        st_mag_unload_ammo: icon.magazine,
+        st_mag_loadout_add: icon.magazine,
+        st_mag_loadout_remove: icon.magazine,
+        st_mag_retool: icon.magazine,
+        st_remove_pouch: icon.magazine,
+        st_remove_speed_loader: icon.magazine,
       },
     }),
-    // Row grouping. Rows are ordered by group number and a divider is drawn wherever it
-    // changes; within a group the game's own order is kept. Anything unlisted falls into the
-    // default group, so the menu degrades to "everything in one block" rather than breaking.
-    // Keys resolve like icons do: label, then property id, then functor.
     f.ltx({
       section: "groups",
       entries: {
@@ -206,25 +140,21 @@ export default (t: Texts) => {
         DYN_FUNC_SP_junk: 3,
         drop: 4,
         drop_all: 4,
-        "item_parts.menu_disassembly": 4,
-        // 145- Ammo Maker's bulk disassembly, next to the disassembly it is a variant of.
-        st_batch_breakdown: 4,
+        "item_parts.menu_disassembly": 5,
+        st_batch_breakdown: 5,
       },
     }),
-    // Per-row text colour, resolved like the icons. Only the destructive rows are coloured;
-    // everything else keeps the game's own colour, so red stays meaningful.
     f.ltx({
       section: "colors",
       entries: {
-        drop: "#7d7d7d",
-        drop_all: "#7d7d7d",
-        "item_parts.menu_disassembly": "#c6645d",
-        // 145- Ammo Maker's bulk disassembly: the same action on a whole stack, so the same red.
-        st_batch_breakdown: "#c6645d",
+        drop: "#888888",
+        drop_all: "#888888",
+        "item_parts.menu_disassembly": "#888888",
+        st_batch_breakdown: "#888888",
         st_rax_fav: "#dec983",
         st_rax_unfav: "#dec983",
-        st_rax_junk: "#7d7d7d",
-        st_rax_unjunk: "#7d7d7d",
+        st_rax_junk: "#888888",
+        st_rax_unjunk: "#888888",
       },
     }),
   ]

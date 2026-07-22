@@ -12,7 +12,7 @@ const addonId: AddonId = "context_menu_overhaul"
  */
 export const defaultConfig = {
   group_related_actions: true,
-  show_colored_icons: false,
+  use_colors: false,
   show_separators: true,
   details_shows_item_name: true,
   capitalize_labels: true,
@@ -22,18 +22,19 @@ export function on_mcm_load() {
   return mcm.menu({
     id: addonId,
     gr: [
-      mcm.title({ id: "title", text: "ui_mcm_menu_context_menu_overhaul" }),
-      // First, because the two below are refinements of it: with grouping off the rows keep
-      // the game's own order and there are no group boundaries for a separator to mark.
+      mcm.title({
+        id: "title",
+        text: "ui_mcm_menu_context_menu_overhaul",
+      }),
       mcm.check({
         id: "group_related_actions",
         def: defaultConfig.group_related_actions,
         text: "ui_mcm_context_menu_overhaul_group_related_actions",
       }),
       mcm.check({
-        id: "show_colored_icons",
-        def: defaultConfig.show_colored_icons,
-        text: "ui_mcm_context_menu_overhaul_show_colored_icons",
+        id: "use_colors",
+        def: defaultConfig.use_colors,
+        text: "ui_mcm_context_menu_overhaul_use_colors",
       }),
       mcm.check({
         id: "show_separators",

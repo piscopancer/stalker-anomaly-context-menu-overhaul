@@ -9,41 +9,55 @@ function grid(id: string, x: number, y: number, w = 1, h = w): UI.TextureRect {
 }
 
 const ICON = 64
+const COLS = 4
 
-function cell(id: keyof UI.Textures, col: number, row: number): UI.TextureRect {
+function cell(id: keyof UI.Textures, index: number): UI.TextureRect {
+  const col = index % COLS
+  const row = Math.floor(index / COLS)
   return { id, x: col * ICON, y: row * ICON, width: ICON, height: ICON }
 }
 
-const icons: UI.TextureRect[] = [
-  cell("ui_cmo_vest", 0, 0),
-  cell("ui_cmo_boxes", 1, 0),
-  cell("ui_cmo_hand", 2, 0),
-  cell("ui_cmo_info", 3, 0),
-  cell("ui_cmo_tools", 0, 1),
-  cell("ui_cmo_bullets", 1, 1),
-  cell("ui_cmo_gift", 2, 1),
-  cell("ui_cmo_book", 3, 1),
-  cell("ui_cmo_backpack", 0, 2),
-  cell("ui_cmo_star", 1, 2),
-  cell("ui_cmo_unstar", 2, 2),
-  cell("ui_cmo_arrows", 3, 2),
-  cell("ui_cmo_utensils", 0, 3),
-  cell("ui_cmo_arrow_down", 1, 3),
-  cell("ui_cmo_saw", 2, 3),
-  cell("ui_cmo_divide", 3, 3),
-  cell("ui_cmo_trashbin", 0, 4),
-  cell("ui_cmo_untrashbin", 1, 4),
-  cell("ui_cmo_helmet", 2, 4),
-  cell("ui_cmo_silencer", 3, 4),
-  cell("ui_cmo_gl", 0, 5),
-  cell("ui_cmo_scope", 1, 5),
-  cell("ui_cmo_patch", 2, 5),
-  cell("ui_cmo_unpack", 3, 5),
-  cell("ui_cmo_pie", 0, 6),
-  cell("ui_cmo_components", 1, 6),
-  cell("ui_cmo_components_star", 2, 6),
-  cell("ui_cmo_tape", 3, 6),
-]
+// Row-major sheet order. `ui_cmo_placeholder` holds the freed first cell (0,0), so every real
+// glyph sits one cell later than the sheet's previous layout — the armour vest is now the second
+// slot and the rest follow unchanged.
+const order = [
+  "ui_cmo_placeholder",
+  "ui_cmo_vest",
+  "ui_cmo_cell",
+  "ui_cmo_info",
+  "ui_cmo_tools",
+  "ui_cmo_bullets",
+  "ui_cmo_gift",
+  "ui_cmo_book",
+  "ui_cmo_backpack",
+  "ui_cmo_star",
+  "ui_cmo_unstar",
+  "ui_cmo_arrows",
+  "ui_cmo_utensils",
+  "ui_cmo_arrow_down",
+  "ui_cmo_saw",
+  "ui_cmo_divide",
+  "ui_cmo_trashbin",
+  "ui_cmo_untrashbin",
+  "ui_cmo_helmet",
+  "ui_cmo_silencer",
+  "ui_cmo_gl",
+  "ui_cmo_scope",
+  "ui_cmo_patch",
+  "ui_cmo_unpack",
+  "ui_cmo_pie",
+  "ui_cmo_screwdriver",
+  "ui_cmo_components_star",
+  "ui_cmo_oil",
+  "ui_cmo_pda",
+  "ui_cmo_magazine",
+  "ui_cmo_health",
+  "ui_cmo_water",
+  "ui_cmo_hands",
+  "ui_cmo_cigarette",
+] as const satisfies (keyof UI.Textures)[]
+
+const icons: UI.TextureRect[] = order.map((id, index) => cell(id, index))
 
 export default (t: Texts) =>
   t.ui.jsxToXml(

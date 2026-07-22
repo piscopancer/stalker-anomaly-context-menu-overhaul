@@ -7,7 +7,7 @@ export default (t: Texts) =>
     ui_mcm_menu_context_menu_overhaul: "Переработка контекстного меню",
     ui_mcm_context_menu_overhaul_group_related_actions:
       "Группировать похожие действия",
-    ui_mcm_context_menu_overhaul_show_colored_icons: "Цветные иконки",
+    ui_mcm_context_menu_overhaul_use_colors: "Использовать цвета",
     ui_mcm_context_menu_overhaul_show_separators: "Разделители",
     ui_mcm_context_menu_overhaul_details_shows_item_name:
       "Опция «Подробнее» показывает название предмета",
