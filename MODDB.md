@@ -76,10 +76,7 @@ local texture = context_menu_overhaul.get_icon(property_id, label, obj, functor)
 
 **1.3.2**
 
-- Icons for entries added by more addons: Anomaly Lootboxes (pick a lock), Filters Redux (equip and
-  remove gas-mask filters and oxygen tanks), TB's RF Receiver Hidden Package Sidequests (cancel a
-  package) and Placeable Furniture (place an item)
-- New glyphs to go with them: a lockpick, a filter, an oxygen tank, a plant and a cross
+- Icons for entries added by more addons, with new glyphs to match: Anomaly Lootboxes (pick a lock), Filters Redux (equip and remove gas-mask filters and oxygen tanks), TB's RF Receiver Hidden Package Sidequests (cancel a package) and Placeable Furniture (place an item)
 
 **1.3.1**
 
