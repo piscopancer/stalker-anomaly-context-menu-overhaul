@@ -38,6 +38,10 @@ const icon = {
   hands: "ui_cmo_hands",
   cigarette: "ui_cmo_cigarette",
   battery: "ui_cmo_battery",
+  lockpick: "ui_cmo_lockpick",
+  filter: "ui_cmo_filter",
+  plant: "ui_cmo_plant",
+  cross: "ui_cmo_cross",
   stash: "ui_inGame2_PDA_icon_backpackstash",
   mark: "ui_icons_newPDA_mark_e",
 } as const satisfies Record<string, UI.TextureId>
@@ -108,6 +112,7 @@ export default (t: Texts) => {
         "speed_loaders.precond_install": icon.magazine,
         "speed_loaders.precond_install_shotgun": icon.magazine,
         "speed_loaders.precond_install_rifle": icon.magazine,
+        "placeable_furniture.place_item": icon.plant,
       },
     }),
     f.ltx({
@@ -129,6 +134,12 @@ export default (t: Texts) => {
         st_mag_retool: icon.magazine,
         st_remove_pouch: icon.magazine,
         st_remove_speed_loader: icon.magazine,
+        st_filter_equip: icon.filter,
+        st_remove_filter: icon.filter,
+        st_tank_equip: icon.placeholder,
+        st_tank_remove: icon.placeholder,
+        st_unlock_pick: icon.lockpick,
+        cb_pda_cancel: icon.cross,
       },
     }),
     f.ltx({

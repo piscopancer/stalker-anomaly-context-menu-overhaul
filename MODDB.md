@@ -21,6 +21,10 @@ Works with addons that add their own entries to the menu. These already have ico
 - Weapon Parts Overhaul by arti
 - Ammo Maker by arti
 - Indirect Parts Favoriter by G_FLAT
+- Anomaly Lootboxes
+- Filters Redux
+- TB's RF Receiver Hidden Package Sidequests
+- Placeable Furniture
 
 ## For addon makers
 
@@ -69,6 +73,13 @@ local texture = context_menu_overhaul.get_icon(property_id, label, obj, functor)
 ```
 
 ## Changelog
+
+**1.3.2**
+
+- Icons for entries added by more addons: Anomaly Lootboxes (pick a lock), Filters Redux (equip and
+  remove gas-mask filters and oxygen tanks), TB's RF Receiver Hidden Package Sidequests (cancel a
+  package) and Placeable Furniture (place an item)
+- New glyphs to go with them: a lockpick, a filter, a plant and a cross
 
 **1.3.1**
 

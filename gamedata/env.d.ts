@@ -86,6 +86,10 @@ declare global {
       ui_cmo_water: true
       ui_cmo_hands: true
       ui_cmo_cigarette: true
+      ui_cmo_lockpick: true
+      ui_cmo_filter: true
+      ui_cmo_plant: true
+      ui_cmo_cross: true
       // original game assets
       ui_cmo_battery: true
     }
