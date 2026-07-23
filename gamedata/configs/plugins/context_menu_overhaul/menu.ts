@@ -42,6 +42,7 @@ const icon = {
   filter: "ui_cmo_filter",
   plant: "ui_cmo_plant",
   cross: "ui_cmo_cross",
+  tank: "ui_cmo_tank",
   stash: "ui_inGame2_PDA_icon_backpackstash",
   mark: "ui_icons_newPDA_mark_e",
 } as const satisfies Record<string, UI.TextureId>
@@ -136,8 +137,8 @@ export default (t: Texts) => {
         st_remove_speed_loader: icon.magazine,
         st_filter_equip: icon.filter,
         st_remove_filter: icon.filter,
-        st_tank_equip: icon.placeholder,
-        st_tank_remove: icon.placeholder,
+        st_tank_equip: icon.tank,
+        st_tank_remove: icon.tank,
         st_unlock_pick: icon.lockpick,
         cb_pda_cancel: icon.cross,
       },

@@ -90,6 +90,7 @@ declare global {
       ui_cmo_filter: true
       ui_cmo_plant: true
       ui_cmo_cross: true
+      ui_cmo_tank: true
       // original game assets
       ui_cmo_battery: true
     }
