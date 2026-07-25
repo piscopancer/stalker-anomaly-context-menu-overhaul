@@ -11,7 +11,7 @@ without this addon knowing it exists.
 
 ## Options
 
-All five are toggleable in MCM and on by default. MCM itself is optional — without it the addon runs
+All six are toggleable in MCM and on by default. MCM itself is optional — without it the addon runs
 with everything on.
 
 | Option | Effect |
@@ -21,6 +21,7 @@ with everything on.
 | Show separators | Draws a divider wherever the group changes |
 | Details option shows item's name | Replaces the "Details" label with the item's inventory name |
 | Capitalize options | Upper-cases the first letter of every label, Cyrillic included |
+| Hide the "gift" option | Drops the `donate` entry, which gives an item to a trader for nothing |
 
 ## Configuration
 
@@ -106,6 +107,22 @@ to the full row. The keys are parked on the widget for the duration of a fill, b
 
 If the collected key list ever disagrees in length with vanilla's name list, the keys are dropped for
 that menu: the icons disappear rather than landing on the wrong rows.
+
+### Second-level menus
+
+Addons open their submenus on their own subclass of `UICellProperties` —
+`utils_ui_custom.UICellPropertiesCustom` alone backs Weapon Parts Overhaul's field strip and part
+replacement and several addons built on top of it. Anomaly's `class "X" (Y)` copies the base's
+methods into the subclass as it is defined, which happens while scripts load and therefore before
+`on_game_start`, so assigning onto the base class never reaches one. The subclasses are instead
+found by walking the script namespaces in `_G` after the base is patched and looking for classes
+that still hold the vanilla `FillList` and `AddItemToList`; the base no longer matches and neither
+does a subclass with an override of its own, so both are left alone.
+
+Those menus get the geometry only — the reserved column, the full-width rows and the full-width
+hover strip — and no icons, colors or grouping. A submenu is not declared the way
+`UIInventory.properties` is: the addon hands `Reset` three bare arrays, so its rows carry no property
+id and no per-row functor, and there is nothing for the config to key on.
 
 ## Building
 

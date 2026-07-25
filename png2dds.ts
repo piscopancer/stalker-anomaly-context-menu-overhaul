@@ -18,9 +18,30 @@ if (!existsSync(inputPath)) {
 }
 const outputPath = resolve(output)
 
+// DirectX 8 needs power-of-two texture dimensions; a non-POT atlas (e.g. 256x704) is rescaled by
+// the engine to the nearest POT, which shifts every glyph. Padding the canvas up to the next POT,
+// anchored top-left so the pixel rects in `ui_cmo_icons.tsx` stay valid, keeps the icons crisp.
+const nextPot = (n: number) => 2 ** Math.ceil(Math.log2(n))
+
+const [w, h] = execFileSync("magick", ["identify", "-format", "%w %h", inputPath])
+  .toString()
+  .trim()
+  .split(" ")
+  .map(Number)
+
+const extent = `${nextPot(w)}x${nextPot(h)}`
+
 execFileSync(
   "magick",
-  [inputPath, "-define", "dds:compression=dxt5", "-define", "dds:mipmaps=0", outputPath],
+  [
+    inputPath,
+    "-background", "none",
+    "-gravity", "NorthWest",
+    "-extent", extent,
+    "-define", "dds:compression=dxt5",
+    "-define", "dds:mipmaps=0",
+    outputPath,
+  ],
   { stdio: "inherit" },
 )
 

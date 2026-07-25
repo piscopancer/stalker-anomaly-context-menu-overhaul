@@ -1,6 +1,10 @@
 /// <reference types="anomaly-packer/types/game" />
 /// <reference types="anomaly-packer/types/other" />
 /// <reference types="anomaly-packer/types/addons/mcm" />
+// Optional third-party integrations. These are type-only references — the globals they declare
+// are guarded at runtime, so the addon runs unchanged for players without these mods installed.
+/// <reference types="anomaly-packer/types/addons/item_ui_improvements" />
+/// <reference types="anomaly-packer/types/addons/weapon_parts_overhaul" />
 
 // This file has a top-level import, so it is a module. The ambient declarations live in
 // `declare global` to stay visible to the scripts without importing them.
@@ -8,6 +12,9 @@ import type {} from "anomaly-packer"
 
 declare global {
   type AddonId = "context_menu_overhaul"
+
+  /** An item section id, re-exported as a global alias so the scripts can name it without importing. */
+  type ItemSection = import("anomaly-packer").Section.Item
 
   /**
    * Augments the empty `McmConfig` from anomaly-packer's mcm types, so
@@ -19,6 +26,9 @@ declare global {
     show_separators: boolean
     details_shows_item_name: boolean
     capitalize_labels: boolean
+    hide_gift: boolean
+    field_strip_icons: boolean
+    maintenance_icons: boolean
   }
 
   /** Globals exported by the sibling `context_menu_overhaul_utils.script`. */
@@ -31,6 +41,7 @@ declare global {
   /** Globals exported by the sibling `context_menu_overhaul_mcm.script`. */
   namespace context_menu_overhaul_mcm {
     const defaultConfig: McmConfig
+    const optionGroup: typeof import("./scripts/mcm").optionGroup
   }
 
   /**
@@ -91,6 +102,9 @@ declare global {
       ui_cmo_plant: true
       ui_cmo_cross: true
       ui_cmo_tank: true
+      ui_cmo_toolkit: true
+      ui_cmo_merge: true
+      ui_cmo_chevron: true
       // original game assets
       ui_cmo_battery: true
     }
@@ -159,6 +173,12 @@ declare global {
      * no entry keeps the game's own colour, which is what most of them should do.
      */
     colors: Record<string, `#${string}`>
+    /**
+     * The glyph drawn at a row's right edge, marking a row that opens a further menu. Keyed like
+     * {@link icons} — label, then property id, then functor. A row with an entry reserves a right
+     * column and right-aligns the glyph; a row without keeps its plain layout.
+     */
+    chevrons: Record<string, IconTexture>
   }
 
   interface IniFileSchemas {
@@ -176,8 +196,14 @@ declare global {
     cmo_labels?: string[]
     /** Width of the icon column added to each row of the menu being filled. */
     cmo_column?: number
+    /** Width of the right-hand chevron column, added to the menu when any row opens a further menu. */
+    cmo_column_right?: number
+    /** The chevron statics of the menu being filled, right-aligned once `W` is final since a row's right edge is only known then. */
+    cmo_chevrons?: CUIStatic[]
     /** The list box's original xml x, captured before this addon shifts it. */
     cmo_list_x?: number
+    /** The list box's original xml y, captured before the field strip moves it down under the icons, so the text menu can be put back. */
+    cmo_list_y?: number
     /**
      * The divider statics of the menu being filled. Their width is only known once every row
      * has been measured, so they are collected here and stretched afterwards.
@@ -185,10 +211,56 @@ declare global {
     cmo_dividers?: CUIStatic[]
     /** Row indices of the dividers in the menu currently shown; outlives `FillList` because `Update` runs every frame and must not highlight a row that cannot be clicked. */
     cmo_inert_rows?: number[]
+    /** Set while a field strip is filled as text, so `AddItemToList` routes through the main row builder for the field-strip icon and separators. */
+    cmo_strip_text?: boolean
+    /**
+     * The cells of a horizontal icon strip (Weapon Parts Overhaul's field strip), one per part,
+     * each an icon drawn into a single list item together with the part's click params. Set for
+     * the life of the shown menu; absent for every ordinary vertical menu. A single item is used
+     * so the scroll view has nothing to scroll — the strip must never move.
+     */
+    cmo_strip?: { item: UICellItem; params: CellPropertyParams }[]
+    /** Pool of real inventory cells reused across openings so the strip never leaks statics onto the form. */
+    cmo_pool?: UICellItem[]
+    /** The strip's "remove all" list row and its form-space rect, kept so `Update`'s highlight can be placed despite the list box's downward offset. */
+    cmo_row?: { item: CUIListBoxItem; x: number; y: number; w: number; h: number }
+    /** The game's own item-info window, created once and driven by section on hover for the strip's tooltip. */
+    cmo_info?: UIInfoItem
+    /** The functor the subclass dispatches a click through — Weapon Parts Overhaul's `act_fieldstrip`; read to route a strip-cell click to the part under the cursor. */
+    functor?: (this: void, ...args: unknown[]) => unknown
+    /** Set while a field strip is registered with `Register_UI`, so it is unregistered exactly once on close. */
+    cmo_registered?: boolean
+    /** The subclass's own `OnKeyboard`, captured so the strip override falls back to it for every non-strip key and menu. */
+    cmo_orig_keyboard?: (this: UICellProperties, dik: number, action: number) => boolean
+    /** The subclass's own `OnHide`, captured so the strip override can drop its UI registration before the class hides. */
+    cmo_orig_hide?: (this: UICellProperties) => void
   }
 
   // --- Cross-script contracts (Anomaly's global-table convention) ---
   namespace context_menu_overhaul {
     const get_icon: typeof import("./scripts/index").get_icon
+    const settings: typeof import("./scripts/index").settings
+    const row_label: typeof import("./scripts/index").row_label
+    const finish_layout: typeof import("./scripts/index").finish_layout
+    const reserve_column: typeof import("./scripts/index").reserve_column
+    const draw_icon: typeof import("./scripts/index").draw_icon
+    const draw_divider: typeof import("./scripts/index").draw_divider
+    const vanilla_fill_list: typeof import("./scripts/index").vanilla_fill_list
+    const vanilla_add_item: typeof import("./scripts/index").vanilla_add_item
+    const safe_index: typeof import("./scripts/index").safe_index
+    const UNKNOWN: typeof import("./scripts/index").UNKNOWN
+    const DIVIDER: typeof import("./scripts/index").DIVIDER
+    const DIVIDER_LINE_H: typeof import("./scripts/index").DIVIDER_LINE_H
+  }
+
+  /** The Weapon Parts Overhaul field strip, in `context_menu_overhaul_wpo.script`; called by the shared hooks in `index`. */
+  namespace context_menu_overhaul_wpo {
+    const is_field_strip: typeof import("./scripts/wpo").is_field_strip
+    const is_maintenance: typeof import("./scripts/wpo").is_maintenance
+    const fill_icons: typeof import("./scripts/wpo").fill_icons
+    const fill_text: typeof import("./scripts/wpo").fill_text
+    const clear: typeof import("./scripts/wpo").clear
+    const highlight: typeof import("./scripts/wpo").highlight
+    const patch: typeof import("./scripts/wpo").patch
   }
 }

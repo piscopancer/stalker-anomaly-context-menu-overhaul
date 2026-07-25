@@ -1,16 +1,6 @@
 # Context Menu Overhaul
 
-This addon gives every context menu option a colored icon, groups related entries together with a divider between the groups, capitalizes the labels and even more.
-
-## Options
-
-All of it is toggleable in MCM, and all of it is on by default:
-
-- Group related actions
-- Use colors
-- Show separators
-- Details option shows item's name
-- Capitalize options
+This addon gives every context menu option a colored icon, groups related entries together with a divider between the groups, capitalizes the labels and even more. Options are toggleable in MCM and on by default. The page is split into two sections.
 
 ## Compatibility
 
@@ -21,6 +11,8 @@ Works with addons that add their own entries to the menu. These already have ico
 - Weapon Parts Overhaul by arti
 - Ammo Maker by arti
 - Indirect Parts Favoriter by G_FLAT
+- Disassemble All Items
+- Combine All Items
 - Anomaly Lootboxes
 - Filters Redux
 - TB's RF Receiver Hidden Package Sidequests
@@ -43,6 +35,9 @@ my_addon.menu_repair = 2
 
 ![colors]
 my_addon.menu_destroy = #ff4444
+
+![chevrons]
+my_addon.menu_open_submenu = ui_cmo_chevron
 ```
 
 A value is a `textures_descr` id or a path to a dds file.
@@ -59,6 +54,8 @@ Sections, all optional:
 - `[groups]` - a number per entry. Entries are ordered by it, a divider is drawn where it changes,
   and `default` holds everything unlisted.
 - `[colors]` - `#rrggbb` or `#rrggbbaa`.
+- `[chevrons]` - a glyph drawn at the row's right edge, marking an entry that opens a further menu.
+  The value is a texture id, usually the built-in `ui_cmo_chevron`.
 
 Lookup: label, then property id, then functor. A missing entry means no icon.
 
@@ -73,6 +70,22 @@ local texture = context_menu_overhaul.get_icon(property_id, label, obj, functor)
 ```
 
 ## Changelog
+
+**1.4.0** (July 25, 2026)
+
+- Weapon Parts Overhaul's field strip and "maintain parts" menus are drawn as real inventory cells,
+  one per part, with the part's own icon, condition and hover tooltip. Each has its own MCM option,
+  on by default; turned off, the menu falls back to a plain text list
+- A chevron marks the rows that open a further menu ("Field strip", "Maintain parts")
+- Submenus get the inventory menu's layout: clickable anywhere on a row and a full-width highlight
+- New MCM option, on by default: hide the "gift" entry
+- MCM options are split into a "Base" section and a "Compatibility → Weapon Parts Overhaul" section
+- Icons for Disassemble All Items and for Combine All Items, with a new "merge" glyph
+- Icons for opening a lootbox with a snapgun or a coin, and for Gwnf5066's Quick Action Wheel
+  Overhaul patch
+- Quick action wheel entries moved above "mark favorite" and "mark junk"; "separate" and "combine
+  all" moved into their own group above them
+- The icon atlas is padded to power-of-two dimensions, fixing slightly misaligned glyphs on DirectX 8
 
 **1.3.2**
 
