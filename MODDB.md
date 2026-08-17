@@ -1,10 +1,10 @@
 # Context Menu Overhaul
 
-This addon gives every context menu option a colored icon, groups related entries together with a divider between the groups, capitalizes the labels and even more. Options are toggleable in MCM and on by default. The page is split into two sections.
+This addon gives every context menu option a colored icon, groups related entries together with a divider between the groups, capitalizes the labels and even more. Options are toggleable in MCM.
 
 ## Compatibility
 
-Works with addons that add their own entries to the menu. These already have icons out of the box:
+Works with addons that add their own entries to the menu.
 
 - SortingPlus by RavenAscendant
 - Quick Action Wheel by HarukaSai
@@ -17,6 +17,7 @@ Works with addons that add their own entries to the menu. These already have ico
 - Filters Redux
 - TB's RF Receiver Hidden Package Sidequests
 - Placeable Furniture
+- Artifacts Inspection Redone
 
 ## For addon makers
 
@@ -71,62 +72,68 @@ local texture = context_menu_overhaul.get_icon(property_id, label, obj, functor)
 
 ## Changelog
 
-**1.4.0** (July 25, 2026)
+1.4.2 (July 27, 2026)
 
-- Weapon Parts Overhaul's field strip and "maintain parts" menus are drawn as real inventory cells,
-  one per part, with the part's own icon, condition and hover tooltip. Each has its own MCM option,
-  on by default; turned off, the menu falls back to a plain text list
-- A chevron marks the rows that open a further menu ("Field strip", "Maintain parts")
-- Submenus get the inventory menu's layout: clickable anywhere on a row and a full-width highlight
-- New MCM option, on by default: hide the "gift" entry
-- MCM options are split into a "Base" section and a "Compatibility → Weapon Parts Overhaul" section
-- Icons for Disassemble All Items and for Combine All Items, with a new "merge" glyph
-- Icons for opening a lootbox with a snapgun or a coin, and for Gwnf5066's Quick Action Wheel
-  Overhaul patch
-- Quick action wheel entries moved above "mark favorite" and "mark junk"; "separate" and "combine
-  all" moved into their own group above them
-- The icon atlas is padded to power-of-two dimensions, fixing slightly misaligned glyphs on DirectX 8
+- [New] Icon for the "inspect" entry from Artifacts Inspection Redone
+- [New] The GAMMA Mags Reloaded entries form their own group right below the default one, and
+  installing or removing a magazine pouch gets a belt pouch glyph of its own
+- [Update] The "read a looted stalker's PDA" icon is redrawn as an eye
+- [Update] "Unload ammo" on a magazine carries the same bullets icon as the vanilla "Unload"
 
-**1.3.2**
+1.4.1 (July 25, 2026)
 
-- Icons for entries added by more addons, with new glyphs to match: Anomaly Lootboxes (pick a lock), Filters Redux (equip and remove gas-mask filters and oxygen tanks), TB's RF Receiver Hidden Package Sidequests (cancel a package) and Placeable Furniture (place an item)
+- [Update] Field strip lists parts in the same order as the condition dots on the weapon's icon
+- [Update] Part condition in the field strip is colored on the same scale as those dots
 
-**1.3.1**
+1.4.0 (July 25, 2026)
 
-- Colors now apply to the whole row, label text included, not just the icon. The MCM option is
-  renamed "Use colors"
-- The "Use" entry carries a distinct icon per consumable: a glass for drinks, cutlery for food,
-  a cross for medicine and a cigarette for smokes, with a neutral hands icon for anything else,
-  instead of one shared glyph for all of them
-- Icons for GAMMA Mags Reloaded: magazine actions (eject, unload, loadout, retool), armour
-  pouches and weapon side saddles
-- Icon for reading a looted stalker's PDA
-- "Drop" now sits above "Disassemble" rather than below
+- [New] Weapon Parts Overhaul's field strip and maintenance menus show each part as an inventory
+  cell, with its icon, condition and tooltip. Two MCM options toggle this, one per menu
+- [New] A chevron marks the entries that open a submenu
+- [New] MCM option: hide the "gift" entry
+- [New] Icons for Disassemble All Items, Combine All Items, lootbox snapgun and coin entries, and
+  Gwnf5066's Quick Action Wheel Overhaul patch
+- [Update] Submenus are laid out like the inventory menu: full-width clicks and highlight
+- [Update] The MCM page is split into "Base" and "Compatibility" sections
+- [Update] Quick action wheel entries moved above "mark favorite" and "mark junk"; "separate" and
+  "combine all" got their own group
+- [Update] Power-of-two icon sheet, fixing misaligned icons on DirectX 8
 
-**1.3.0**
+1.3.2
 
-- Icons for entries added by other addons: Ammo Maker, Quick Action Wheel, Weapon Parts Overhaul
-  and G_FLAT's Indirect Parts Favoriter
-- An entry can now be named in the config by its translation id even when the addon that owns it
-  hands the menu finished text, so icons no longer depend on the game's language
-- "Disassemble all" is grouped and colored with the other disassembly entries
+- [New] Icons for Anomaly Lootboxes, Filters Redux, TB's RF Receiver Hidden Package Sidequests and
+  Placeable Furniture
 
-**1.2.0**
+1.3.1
 
-- Russian translation
-- Fixed the MCM page still being titled "Context Menu Icons"
-- Renamed the config file from `icons.ltx` to `menu.ltx`. A DLTX patch written for 1.1.0 must be
-  renamed from `mod_icons_<addon>.ltx` to `mod_menu_<addon>.ltx`
+- [New] Icons for GAMMA Mags Reloaded magazine actions, armour pouches and side saddles
+- [New] Icon for reading a looted stalker's PDA
+- [Update] Colors apply to the whole row, not just the icon; the MCM option is renamed "Use colors"
+- [Update] "Use" carries a distinct icon per consumable: drinks, food, medicine, smokes
+- [Update] "Drop" sits above "Disassemble"
 
-**1.1.0**
+1.3.0
 
-- Own icon set, replacing the borrowed vanilla textures
-- Grouping, with a divider between groups
-- Colored icons
-- Capitalized labels
-- "Details" shows the item's name
-- Fixed clicks not registering to the right of a short label
+- [New] Icons for Ammo Maker, Quick Action Wheel, Weapon Parts Overhaul and G_FLAT's Indirect Parts
+  Favoriter
+- [Update] An entry can be named in the config by its translation id, so icons no longer depend on
+  the game's language
+- [Update] "Disassemble all" is grouped and colored with the other disassembly entries
 
-**1.0.0**
+1.2.0
 
-- Initial release
+- [New] Russian translation
+- [Update] The config file is renamed from `icons.ltx` to `menu.ltx`. A DLTX patch written for 1.1.0
+  must be renamed from `mod_icons_<addon>.ltx` to `mod_menu_<addon>.ltx`
+- [Update] Fixed the MCM page still being titled "Context Menu Icons"
+
+1.1.0
+
+- [New] Own icon set, replacing the borrowed vanilla textures
+- [New] Grouping with dividers, colored icons, capitalized labels
+- [New] "Details" shows the item's name
+- [Update] Fixed clicks not registering to the right of a short label
+
+1.0.0
+
+- [New] Initial release

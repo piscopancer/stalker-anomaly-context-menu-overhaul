@@ -97,6 +97,48 @@ export function is_maintenance(action_list: string[]) {
   return true
 }
 
+/**
+ * Item UI Improvements, when installed, draws a condition dot per part on the weapon's own
+ * inventory icon and orders them by its `parts_sort` — a fixed part-name order (barrel, trigger,
+ * bolt, bolt carrier, …). The menu WPO hands over is ordered by whatever comparator the installed
+ * field-strip builder happens to use (in GAMMA, `utils_ui.sort_by_sizekind`, i.e. by inventory grid
+ * size), so the rows do not line up with the dots the player just read off the icon. Returns the
+ * dot comparator when that mod is present, and nothing when it is not — without it there are no
+ * dots to match and the order WPO gave is kept.
+ */
+function dot_order() {
+  if (type(z_item_icon_info) !== "table") {
+    return undefined
+  }
+  const sorter = safe_index(z_item_icon_info, "parts_sort")
+  return type(sorter) === "function"
+    ? (sorter as (this: void, t: AnyTable, a: string, b: string) => boolean)
+    : undefined
+}
+
+/** Reorders the part rows to match the icon's condition dots. A comparator over a set it was not written for can be inconsistent, which makes `table.sort` raise; on any failure the rows are left in the order WPO gave. */
+function sort_by_dots(parts: StripRow[]) {
+  const sorter = dot_order()
+  if (!sorter || parts.length < 2) {
+    return
+  }
+  // The comparator takes the parts table itself and two of its keys, so it is fed the same
+  // section -> condition shape `item_parts.get_parts_con` returns.
+  const conditions: Record<string, number> = {}
+  for (const row of parts) {
+    conditions[part_sec(row.params)] = part_cond(row.params)
+  }
+  const before = [...parts]
+  const [ok] = pcall(() =>
+    table.sort(parts, (a, b) => sorter(conditions, part_sec(a.params), part_sec(b.params))),
+  )
+  if (!ok) {
+    for (let i = 0; i < before.length; i++) {
+      parts[i] = before[i]
+    }
+  }
+}
+
 /** Splits a field strip into its part rows (each carries a section) and WPO's section-less "remove all", which its own loop vars have gone out of scope by. */
 function split_strip(
   action_list: string[],
@@ -117,6 +159,7 @@ function split_strip(
       remove_all = row
     }
   }
+  sort_by_dots(parts)
   return { parts, remove_all }
 }
 
@@ -141,6 +184,27 @@ function make_part_proxy(sec: ItemSection, cond: number) {
   const proxy = setmetatable(overrides, { __index: () => proxy_stub })
   // A proxy, not a real object; it answers the three real reads and stubs the rest.
   return proxy as unknown as CGameObject
+}
+
+/**
+ * Puts a strip cell's condition percentage on the same colour scale as the dots on the weapon's
+ * icon. The percentage is drawn by Item UI Improvements, which colours an ordinary item's condition
+ * text by interpolating a red-to-green gradient, while it colours the part dots by discrete
+ * thresholds — so an untouched cell contradicts the icon the player just read (a part the dots call
+ * orange shows up yellow-green). `utils_xml.get_color_con` is the graded scale both WPO's own text
+ * rows and the GAMMA patches that retune those thresholds go through, so borrowing it keeps the
+ * strip in step with them. The text control only exists while that mod is installed; without it
+ * there is no percentage to recolour and this does nothing.
+ */
+function recolor_condition(item: UICellItem, cond: number) {
+  const text = safe_index(item, "cond_text") as CUITextWnd | undefined
+  if (!text) {
+    return
+  }
+  const color = utils_xml.get_color_con(cond, true)
+  if (type(color) === "number") {
+    pcall(() => text.SetTextColor(color as unknown as number))
+  }
 }
 
 /** Rebuilds the field strip as the horizontal icon strip; the caller has already checked the icon option is on. */
@@ -251,6 +315,7 @@ function build(widget: UICellProperties, parts: StripRow[], remove_all?: StripRo
       item.cell.Show(false)
       continue
     }
+    recolor_condition(item, part_cond(p))
     item.cell.SetWndPos(vec(STRIP_PAD + x, STRIP_PAD))
     item.cell.Show(true)
     cells.push({ item: item, params: p })

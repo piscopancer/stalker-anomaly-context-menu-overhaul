@@ -49,7 +49,7 @@ const order = [
   "ui_cmo_screwdriver",
   "ui_cmo_components_star",
   "ui_cmo_oil",
-  "ui_cmo_pda",
+  "ui_cmo_eye",
   "ui_cmo_magazine",
   "ui_cmo_health",
   "ui_cmo_water",
@@ -63,6 +63,7 @@ const order = [
   "ui_cmo_toolkit",
   "ui_cmo_merge",
   "ui_cmo_chevron",
+  "ui_cmo_pouch",
 ] as const satisfies (keyof UI.Textures)[]
 
 const icons: UI.TextureRect[] = order.map((id, index) => cell(id, index))

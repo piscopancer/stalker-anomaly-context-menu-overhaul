@@ -91,7 +91,7 @@ declare global {
       ui_cmo_screwdriver: true
       ui_cmo_components_star: true
       ui_cmo_oil: true
-      ui_cmo_pda: true
+      ui_cmo_eye: true
       ui_cmo_magazine: true
       ui_cmo_health: true
       ui_cmo_water: true
@@ -105,6 +105,7 @@ declare global {
       ui_cmo_toolkit: true
       ui_cmo_merge: true
       ui_cmo_chevron: true
+      ui_cmo_pouch: true
       // original game assets
       ui_cmo_battery: true
     }
